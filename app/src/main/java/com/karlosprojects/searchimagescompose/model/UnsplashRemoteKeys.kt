@@ -8,6 +8,6 @@ import com.karlosprojects.searchimagescompose.util.Constants.UNSPLASH_REMOTE_KEY
 data class UnsplashRemoteKeys(
     @PrimaryKey(autoGenerate = false)
     val id: String,
-    val prevPage: Int,
-    val nextPage: Int
+    val prevPage: Int?,
+    val nextPage: Int?
 )
