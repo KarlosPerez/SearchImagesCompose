@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.karlosprojects.searchimagescompose">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name=".SearchImagesApp"
         android:allowBackup="true"
