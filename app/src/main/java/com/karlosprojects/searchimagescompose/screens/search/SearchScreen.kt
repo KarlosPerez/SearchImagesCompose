@@ -7,8 +7,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.compose.collectAsLazyPagingItems
+import coil.annotation.ExperimentalCoilApi
 import com.karlosprojects.searchimagescompose.screens.common.ListContent
 
+@ExperimentalCoilApi
 @ExperimentalPagingApi
 @Composable
 fun SearchScreen(
@@ -34,7 +36,7 @@ fun SearchScreen(
             )
         },
         content = {
-            ListContent(items = searchedImages)
+            ListContent(items = searchedImages, navController = navController)
         }
     )
 }

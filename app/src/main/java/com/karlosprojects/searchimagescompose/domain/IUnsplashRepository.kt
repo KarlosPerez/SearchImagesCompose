@@ -10,4 +10,6 @@ interface IUnsplashRepository {
 
     fun searchImages(query: String): Flow<PagingData<UnsplashImage>>
 
+    fun getPhotoDetail(photoId: String): Flow<UnsplashImage>
+
 }

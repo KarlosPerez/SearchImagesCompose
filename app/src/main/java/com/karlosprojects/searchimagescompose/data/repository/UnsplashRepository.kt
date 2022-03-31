@@ -46,4 +46,8 @@ class UnsplashRepository @Inject constructor(
         ).flow
     }
 
+    override fun getPhotoDetail(photoId: String): Flow<UnsplashImage> {
+       return unsplashDatabase.unsplashImageDao().getPhotoDetail(photoId)
+    }
+
 }

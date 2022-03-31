@@ -22,23 +22,24 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
+import androidx.navigation.NavController
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.items
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.karlosprojects.searchimagescompose.R
 import com.karlosprojects.searchimagescompose.model.UnsplashImage
-import com.karlosprojects.searchimagescompose.model.Urls
-import com.karlosprojects.searchimagescompose.model.User
-import com.karlosprojects.searchimagescompose.model.UserLinks
+import com.karlosprojects.searchimagescompose.navigation.Screen
 import com.karlosprojects.searchimagescompose.ui.theme.HeartRed
 
 @ExperimentalCoilApi
 @Composable
-fun ListContent(items: LazyPagingItems<UnsplashImage>) {
+fun ListContent(
+    items: LazyPagingItems<UnsplashImage>,
+    navController: NavController
+) {
     Log.d("Error", items.loadState.toString())
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -51,14 +52,17 @@ fun ListContent(items: LazyPagingItems<UnsplashImage>) {
                 unsplashImage.id
             }
         ) { unsplashImage ->
-            unsplashImage?.let { UnsplashItem(unsplashImage = it) }
+            unsplashImage?.let { UnsplashItem(unsplashImage = it, navController = navController) }
         }
     }
 }
 
 @ExperimentalCoilApi
 @Composable
-fun UnsplashItem(unsplashImage: UnsplashImage) {
+fun UnsplashItem(
+    unsplashImage: UnsplashImage,
+    navController: NavController
+) {
     val painter = rememberImagePainter(data = unsplashImage.urls.regular) {
         crossfade(durationMillis = 1000)
         error(R.drawable.ic_placeholder)
@@ -67,19 +71,18 @@ fun UnsplashItem(unsplashImage: UnsplashImage) {
     val context = LocalContext.current
     Box(
         modifier = Modifier
-            .clickable {
-                val browserIntent = Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse("https://unsplash.com/@${unsplashImage.user.username}?utm_source=SearchImagesApp&utm_medium=referral")
-                )
-                startActivity(context, browserIntent, null)
-            }
             .height(300.dp)
             .fillMaxWidth(),
-        contentAlignment = Alignment.BottomCenter
+        contentAlignment = Alignment.BottomCenter,
     ) {
         Image(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable {
+                    navController.navigate(
+                        route = Screen.Detail.sendPhoto(unsplashImage.id)
+                    )
+                },
             painter = painter,
             contentDescription = "Unsplash Image",
             contentScale = ContentScale.Crop
@@ -110,7 +113,14 @@ fun UnsplashItem(unsplashImage: UnsplashImage) {
                 color = Color.White,
                 fontSize = MaterialTheme.typography.caption.fontSize,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.clickable {
+                    val browserIntent = Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("https://unsplash.com/@${unsplashImage.user.username}?utm_source=SearchImagesApp&utm_medium=referral")
+                    )
+                    startActivity(context, browserIntent, null)
+                }
             )
             LikeCounter(
                 modifier = Modifier.weight(3f),
@@ -147,18 +157,4 @@ fun LikeCounter(
             overflow = TextOverflow.Ellipsis
         )
     }
-}
-
-@ExperimentalCoilApi
-@Composable
-@Preview
-fun UnsplashImagePreview() {
-    UnsplashItem(
-        unsplashImage = UnsplashImage(
-            id = "1",
-            urls = Urls(regular = ""),
-            likes = 100,
-            user = User(username = "Legomarth", userLinks = UserLinks(html = ""))
-        )
-    )
 }
